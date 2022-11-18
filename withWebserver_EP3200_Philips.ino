@@ -64,6 +64,7 @@ byte serInIdx = 0;
 //commands
 byte powerOff[] =       {0xD5, 0x55, 0x00, 0x01, 0x03, 0x00, 0x0E, 0x01, 0x00, 0x00, 0x39, 0x39};
 byte powerOn[] =        {0xD5, 0x55, 0x0A, 0x01, 0x03, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x2A, 0x10};
+byte powerOn1[] =       {0xD5, 0x55, 0x0A, 0x01, 0x03, 0x00, 0x0E, 0x00, 0x00, 0x00, 0x2A, 0x10};
 byte espresso[] =       {0xD5, 0x55, 0x00, 0x01, 0x03, 0x00, 0x0E, 0x02, 0x00, 0x00, 0x2D, 0x2F};
 byte coffee[] =         {0xd5, 0x55, 0x00, 0x01, 0x03, 0x00, 0x0e, 0x08, 0x00, 0x00, 0x1d, 0x1e};
 byte americano[] =      {0xD5, 0x55, 0x00, 0x01, 0x03, 0x00, 0x0E, 0x20, 0x00, 0x00, 0x04, 0x15};
@@ -87,7 +88,7 @@ char oldStatus[19] = "";
 // Declare AutoConnectElements for the page asf /mqtt_setting
 ACStyle(style, "label+input,label+select{position:sticky;left:120px;width:230px!important;box-sizing:border-box;}");
 ACText(header, "<h2>MQTT Settings</h2>", "text-align:center;color:#2f4f4f;padding:10px;");
-ACText(caption, "MQTT Server Settings. The following MQTT commands are availabe:<br><br>Mirzacoffee/command/powerOn<br>coffee/command/powerOff<br>coffee/command/hotWater<br>coffee/command/espresso<br>coffee/command/coffee<br>coffee/command/steam<br>coffee/command/coffeePulver<br>coffee/command/coffeeWater<br>coffee/command/calcNclean<br>coffee/command/aquaClean<br>coffee/command/startPause<br><br>Send the command with a count of repeats as value (typical 5).", "font-family:serif;color:#4682b4;");
+ACText(caption, "MQTT Server Settings. The following MQTT commands are availabe:<br><br>coffee/command/powerOn<br>coffee/command/powerOff<br>coffee/command/hotWater<br>coffee/command/espresso<br>coffee/command/coffee<br>coffee/command/steam<br>coffee/command/coffeePulver<br>coffee/command/coffeeWater<br>coffee/command/calcNclean<br>coffee/command/aquaClean<br>coffee/command/startPause<br><br>Send the command with a count of repeats as value (typical 5).", "font-family:serif;color:#4682b4;");
 ACInput(inMqttserver, mqttServer.c_str(), "MQTT-Server", "", "e.g. 192.168.172.99");
 ACInput(inMqttport, mqttPort.c_str(), "MQTT Port", "", "e.g. 1883 or 1884");
 ACInput(inMqttuser, mqttUser.c_str(), "MQTT User", "", "default: admin");
@@ -212,6 +213,7 @@ void callback(String topic, byte* message, int length) {
       Serial1.println("Count out of range");
     } else if (topic == "coffee/command/powerOn") {
       serialSend(powerOn, count);
+      serialSend(powerOn1, count);
       //Workaround: D7 is connected to a NPN Transistor that cuts the ground from the display
       //--> MC of the display reboots
       digitalWrite(D7, LOW);
@@ -332,6 +334,7 @@ void sendPowerOff(){
 
 void sendPowerOn(){
   serialSend(powerOn, 5);
+  serialSend(powerOn1, 5);
   redirect(AUX_TEST_URI);
 }
 void handleRoot() {
